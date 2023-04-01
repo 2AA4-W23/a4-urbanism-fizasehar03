@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+
 public class Graph<NodeType,EdgeType extends Edge<NodeType>> {
     //generic constraint
     private HashMap<NodeType, ArrayList<EdgeType>> edges; //edges equals to hashmap, key is from, value is an array list of everything it connects from to
