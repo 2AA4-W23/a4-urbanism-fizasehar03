@@ -1,4 +1,4 @@
-# Mesh Generator (Assignment #2 Walkthrough)
+# Mesh Generator (Assignment #4 Walkthrough)
 
   - Author: Sébastien Mosser
 
