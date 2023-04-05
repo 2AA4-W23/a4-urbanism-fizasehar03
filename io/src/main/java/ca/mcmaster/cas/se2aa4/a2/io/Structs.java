@@ -1794,6 +1794,7 @@ public final class Structs {
       return properties_.get(index);
     }
 
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {

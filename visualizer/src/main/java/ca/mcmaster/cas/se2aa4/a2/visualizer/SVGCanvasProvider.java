@@ -22,7 +22,6 @@ public class SVGCanvasProvider {
         Graphics2D canvas = SVGCanvasProvider.build((int) Math.ceil(max_x), (int) Math.ceil(max_y));
         return canvas;
     }
-
     public static Graphics2D build(int width, int height) {
         DOMImplementation dom = GenericDOMImplementation.getDOMImplementation();
         String svgNS = "http://www.w3.org/2000/svg";
@@ -31,12 +30,10 @@ public class SVGCanvasProvider {
         g.setSVGCanvasSize(new Dimension(width, height));
         return g;
     }
-
     public static void write(Graphics2D g, String fileName) throws IOException {
         if (! (g instanceof SVGGraphics2D))
             throw new IllegalArgumentException("Not an SVG canvas!");
         SVGGraphics2D svg = (SVGGraphics2D) g;
         svg.stream(fileName, true);
     }
-
 }
