@@ -42,7 +42,6 @@ public class WetSoil implements Soil{
         }
         for(int i = 0; i < rivers.getTempSeg().size(); i++){
             if(rivers.getDischarge().get(i) > 0){
-                System.out.println("helloooooo");
                 int currentDischarge = rivers.getDischarge().get(i);
 
                 double xRiver = (mesh.getVerticesList().get(rivers.getTempSeg().get(i).getV1Idx()).getX() + mesh.getVerticesList().get(rivers.getTempSeg().get(i).getV2Idx()).getX())/2;
