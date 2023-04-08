@@ -29,7 +29,7 @@ public class Rivers {
         HashSet<Structs.Polygon> visitedPolygons = new HashSet<>();
         Random rand1 = new Random(seed);
 
-        for(int d = 0; d < mesh.getSegmentsCount(); d++){
+        for(int d = 0; d < tempSeg.size(); d++){
             discharge.add(0);
         }
 
@@ -78,12 +78,10 @@ public class Rivers {
                         if(!visited.contains(Structs.Segment.newBuilder().setV1Idx(pCurrent.getCentroidIdx()).setV2Idx(pNext.getCentroidIdx()).addProperties(river1.setColourCode()).build())){
                             tempSeg.add(Structs.Segment.newBuilder().setV1Idx(pCurrent.getCentroidIdx()).setV2Idx(pNext.getCentroidIdx()).addProperties(river1.setColourCode()).build());
                             discharge.add(currentDischarge);
-                        }
-                        else{
+                        } else {
                             tempSeg.add(Structs.Segment.newBuilder().setV1Idx(pCurrent.getCentroidIdx()).setV2Idx(pNext.getCentroidIdx()).addProperties(river1.setColourCode()).addProperties(river1.addWeight()).build());
                             discharge.add(discharge.get(tempSeg.indexOf(Structs.Segment.newBuilder().setV1Idx(pCurrent.getCentroidIdx()).setV2Idx(pNext.getCentroidIdx()).addProperties(river1.setColourCode()).build())) + currentDischarge);
                             discharge.set(tempSeg.indexOf(Structs.Segment.newBuilder().setV1Idx(pCurrent.getCentroidIdx()).setV2Idx(pNext.getCentroidIdx()).addProperties(river1.setColourCode()).build()), discharge.get(tempSeg.indexOf(Structs.Segment.newBuilder().setV1Idx(pCurrent.getCentroidIdx()).setV2Idx(pNext.getCentroidIdx()).addProperties(river1.setColourCode()).build())) + currentDischarge);
-
                         }
                         visited.add(tempSeg.get(tempSeg.size()-1));
                         break;
