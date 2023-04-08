@@ -35,11 +35,14 @@ public class GraphicRenderer implements Renderer {
     }
 
     private void drawDots(Mesh aMesh, Graphics2D canvas) {
-        canvas.setColor(Color.ORANGE);
+        canvas.setColor(Color.PINK);
         for (Vertex v : aMesh.getVerticesList()) {
             Optional<Integer> citySize = new CityProperty().extract(v.getPropertiesList());
             if (citySize.isPresent()) {
-                Ellipse2D circle = new Ellipse2D.Float((float) v.getX()-2.5f, (float) v.getY()-2.5f, 5, 5);
+                Integer citySizeVal = citySize.get();
+                float size = 7 + citySizeVal.floatValue() * 3;
+                float posOffset = size / 2;
+                Ellipse2D circle = new Ellipse2D.Float((float) v.getX()-posOffset, (float) v.getY()-posOffset, size, size);
                 canvas.fill(circle);
             }
         }
@@ -93,6 +96,7 @@ public class GraphicRenderer implements Renderer {
             Stroke stroke = new BasicStroke(0.2f);
             canvas.setStroke(stroke);
         }
+
     }
 
 }

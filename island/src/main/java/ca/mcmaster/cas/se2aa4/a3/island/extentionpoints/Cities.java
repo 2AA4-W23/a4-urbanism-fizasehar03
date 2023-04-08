@@ -47,6 +47,28 @@ public class Cities {
         }
     }
 
+    public enum CitySize {
+        TOWN(1),
+        SMALL(2),
+        MEDIUM(3),
+        LARGE(4),
+        METROPOLIS(5);
+
+        private final int index;
+
+        private CitySize(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public static CitySize getRandomCitySize(Random random) {
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
     public static Structs.Mesh addCities(Structs.Mesh mesh, ArrayList<String> types, int numCities, long seed) {
         Random r = new Random(seed);
 
@@ -114,7 +136,8 @@ public class Cities {
             Vertex.Builder builder = Vertex.newBuilder().mergeFrom(v);
             Coordinate c = new Coordinate(v);
             if (cities.contains(c)) {
-                builder.addProperties(Structs.Property.newBuilder().setKey("city_size").setValue("1").build());
+                CitySize size = CitySize.getRandomCitySize(r);
+                builder.addProperties(Structs.Property.newBuilder().setKey("city_size").setValue(String.valueOf(size.getIndex())).build());
             }
             newVertices.add(builder.build());
         }
