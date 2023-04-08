@@ -3,6 +3,7 @@ package ca.mcmaster.cas.se2aa4.a2.visualizer.renderer;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Mesh;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Vertex;
+import ca.mcmaster.cas.se2aa4.a2.visualizer.renderer.properties.CityProperty;
 import ca.mcmaster.cas.se2aa4.a2.visualizer.renderer.properties.ColorProperty;
 
 import java.awt.Graphics2D;
@@ -10,6 +11,7 @@ import java.awt.Stroke;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Line2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.util.Iterator;
 import java.util.Optional;
@@ -23,12 +25,25 @@ public class GraphicRenderer implements Renderer {
         canvas.setStroke(stroke);
         drawPolygons(aMesh,canvas);
         drawSegments(aMesh, canvas);
+        drawDots(aMesh, canvas);
     }
 
     private void drawPolygons(Mesh aMesh, Graphics2D canvas) {
         for(Structs.Polygon p: aMesh.getPolygonsList()){
             drawAPolygon(p, aMesh, canvas);
         }
+    }
+
+    private void drawDots(Mesh aMesh, Graphics2D canvas) {
+        canvas.setColor(Color.ORANGE);
+        for (Vertex v : aMesh.getVerticesList()) {
+            Optional<Integer> citySize = new CityProperty().extract(v.getPropertiesList());
+            if (citySize.isPresent()) {
+                Ellipse2D circle = new Ellipse2D.Float((float) v.getX()-2.5f, (float) v.getY()-2.5f, 5, 5);
+                canvas.fill(circle);
+            }
+        }
+        canvas.setColor(Color.BLACK);
     }
 
     private void drawAPolygon(Structs.Polygon p, Mesh aMesh, Graphics2D canvas) {

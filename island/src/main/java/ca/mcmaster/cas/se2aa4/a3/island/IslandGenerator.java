@@ -6,6 +6,7 @@ import ca.mcmaster.cas.se2aa4.a2.io.Structs.Polygon;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Segment;
 import ca.mcmaster.cas.se2aa4.a3.island.biomes.Biomes;
 import ca.mcmaster.cas.se2aa4.a3.island.elevationprofiles.Elevations;
+import ca.mcmaster.cas.se2aa4.a3.island.extentionpoints.Cities;
 import ca.mcmaster.cas.se2aa4.a3.island.shapes.CircleIsland;
 import ca.mcmaster.cas.se2aa4.a3.island.shapes.SquareIsland;
 
@@ -44,18 +45,21 @@ public class IslandGenerator {
             seed=newSeed;
             System.out.println(seed);
         }
-
-
-        if(shape.equals("Circle") || shape.equals("circle")){
+        Mesh finalizedMesh;
+        ArrayList<String> type;
+        if (shape.equals("Circle") || shape.equals("circle")) {
             CircleIsland circleIsland = new CircleIsland();
             circleIsland.generateCircleIsland(mesh, xcenter, ycenter, lagoon, lakes, rivers, aquifers, altitude, soil, minDimension, biomes, seed);
-            return(finalizeMesh(mesh, circleIsland.getTempMeshProperties(), circleIsland.getTempSeg()));
-        }
-        else{
+            finalizedMesh = finalizeMesh(mesh, circleIsland.getTempMeshProperties(), circleIsland.getTempSeg());
+            type = circleIsland.getType();
+        } else {
             SquareIsland squareIsland = new SquareIsland();
             squareIsland.generateSquareIsland(mesh, xcenter, ycenter, lakes, rivers, aquifers, altitude, soil, minDimension, biomes, seed);
-            return(finalizeMesh(mesh, squareIsland.getTempMeshProperties(), squareIsland.getTempSeg()));
+            finalizedMesh = finalizeMesh(mesh, squareIsland.getTempMeshProperties(), squareIsland.getTempSeg());
+            type = squareIsland.getType();
+
         }
+        return Cities.addCities(finalizedMesh, type, 100, seed);
     }
     public Mesh finalizeMesh(Mesh tempMesh, ArrayList<Polygon> temp, ArrayList<Segment> tempSeg) {
         return Mesh.newBuilder().addAllVertices(tempMesh.getVerticesList()).addAllSegments(tempSeg).addAllPolygons(temp).build();
