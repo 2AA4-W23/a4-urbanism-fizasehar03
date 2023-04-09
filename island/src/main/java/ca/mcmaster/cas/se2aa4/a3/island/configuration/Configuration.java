@@ -20,6 +20,10 @@ public class Configuration {
 
     public static final String SEED = "seed";
 
+    public static final String CITIES = "cities";
+
+
+
 
     public static final String HELP = "help";
 
@@ -109,6 +113,14 @@ public class Configuration {
         }
         return 0;
     }
+
+    public int cities() {
+        if(cli.hasOption(CITIES)) {
+            return Integer.valueOf(this.cli.getOptionValue(CITIES));
+        }
+        return 0;
+    }
+
     private Options options() {
         Options options = new Options();
         options.addOption(new Option(INPUT, true, "Input file (SVG)"));
@@ -121,6 +133,7 @@ public class Configuration {
         options.addOption(new Option(SOIL, true, "Type of soil on the island for absorption"));
         options.addOption(new Option(BIOME, true, "Type of biome that's on the island to be generated "));
         options.addOption(new Option(SEED, true, "The SEED for reproducibility"));
+        options.addOption(new Option(CITIES, true, "The amount of cities being generated"));
 
 
         options.addOption(new Option(LAGOON, false, "Whether or not island should be a lagoon island"));

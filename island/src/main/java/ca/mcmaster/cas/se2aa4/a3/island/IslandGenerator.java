@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class IslandGenerator {
 
-    public Mesh generateIsland(Mesh mesh, String shape, boolean lagoon, int lakes, int rivers, int aquifers, String altitude, String soil, String biomes, long seed){
+    public Mesh generateIsland(Mesh mesh, String shape, boolean lagoon, int lakes, int rivers, int aquifers, String altitude, String soil, String biomes, long seed, int cities){
         Mesh tempMesh = mesh;
         double xcenter = 0;
         double ycenter = 0;
@@ -59,7 +59,7 @@ public class IslandGenerator {
             type = squareIsland.getType();
 
         }
-        return Cities.addCities(finalizedMesh, type, 100, seed);
+        return Cities.addCities(finalizedMesh, type, cities, seed);
     }
     public Mesh finalizeMesh(Mesh tempMesh, ArrayList<Polygon> temp, ArrayList<Segment> tempSeg) {
         return Mesh.newBuilder().addAllVertices(tempMesh.getVerticesList()).addAllSegments(tempSeg).addAllPolygons(temp).build();
