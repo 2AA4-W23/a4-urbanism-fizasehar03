@@ -4,6 +4,9 @@ import java.util.*;
 
 import ca.mcmaster.cas.se2aa4.a2.io.Structs;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Vertex;
+import ca.mcmaster.cas.se2aa4.a4.pathfinder.DijkstraPathFinder;
+import ca.mcmaster.cas.se2aa4.a4.pathfinder.Edge;
+import ca.mcmaster.cas.se2aa4.a4.pathfinder.Graph;
 
 public class Cities {
 
@@ -13,20 +16,31 @@ public class Cities {
         Double x;
         Double y;
 
-        Coordinate(Vertex v){
-            this.x=v.getX();
-            this.y=v.getY();
+        Coordinate(Vertex v) {
+            this.x = v.getX();
+            this.y = v.getY();
         }
-        public double getDistance(Coordinate other){
+
+        Coordinate(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double getDistance(Coordinate other) {
             double pointDifference = Math.sqrt((Math.pow(this.getX()-other.getX(),2)+Math.pow(this.getY()-other.getY(),2)));
             return pointDifference;
         }
+
         public double getX() {
             return x;
         }
 
         public double getY() {
             return y;
+        }
+
+        public Vertex makeVertex() {
+            return Vertex.newBuilder().setX(x).setY(y).build();
         }
 
         @Override
@@ -44,6 +58,11 @@ public class Cities {
         @Override
         public int hashCode() {
             return Objects.hash(x, y);
+        }
+
+        @Override
+        public String toString() {
+            return this.x.toString() + "," + this.y.toString();
         }
     }
 
@@ -66,6 +85,43 @@ public class Cities {
 
         public static CitySize getRandomCitySize(Random random) {
             return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public static class CityEdge implements Edge<Coordinate> {
+        Coordinate source;
+        Coordinate destination;
+
+        CityEdge(Coordinate source, Coordinate destination) {
+            this.source = source;
+            this.destination = destination;
+        }
+
+        @Override
+        public Coordinate getDestination() {
+            return destination;
+        }
+
+        @Override
+        public double getWeight() {
+            return source.getDistance(destination);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            CityEdge that = (CityEdge) obj;
+            return this.source.equals(that.source) && this.destination.equals(that.destination);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.source, this.destination);
         }
     }
 
@@ -101,35 +157,78 @@ public class Cities {
             }
         }
 
-        HashSet<Coordinate> cities = new HashSet<>();
+        HashSet<Coordinate> allCities = new HashSet<>();
         for (Vertex v : vertices) {
             Coordinate c = new Coordinate(v);
             if (polygonCoordinates.contains(c)) continue;
             if (!touchingLand.contains(c)) continue;
-            cities.add(c);
+            allCities.add(c);
         }
 
-        ArrayList<Coordinate> allCities = new ArrayList<>(cities);
-        for (int i = 0; i < allCities.size(); i++) {
-            int idx1 = r.nextInt(allCities.size());
-            int idx2 = r.nextInt(allCities.size());
-            Coordinate c1 = allCities.get(idx1);
-            Coordinate c2 = allCities.get(idx2);
-            allCities.set(idx1, c2);
-            allCities.set(idx2, c1);
+        ArrayList<Coordinate> shuffledCities = new ArrayList<>(allCities);
+        for (int i = 0; i < shuffledCities.size(); i++) {
+            int idx1 = i;
+            int idx2 = r.nextInt(shuffledCities.size());
+            Coordinate c1 = shuffledCities.get(idx1);
+            Coordinate c2 = shuffledCities.get(idx2);
+            shuffledCities.set(idx1, c2);
+            shuffledCities.set(idx2, c1);
         }
-        cities.clear();
+
+        HashSet<Coordinate> cities = new HashSet<>();
         for (int i = 0; i < numCities; i++) {
-            Coordinate chosenCity = allCities.get(i);
-            for (int j = allCities.size() - 1; j >= 0; j--) {
-                if (allCities.get(j).getDistance(chosenCity) < 40) {
-                    allCities.remove(j);
+            Coordinate chosenCity = shuffledCities.get(i);
+            for (int j = shuffledCities.size() - 1; j >= 0; j--) {
+                if (shuffledCities.get(j).getDistance(chosenCity) < 40) {
+                    shuffledCities.remove(j);
                 }
             }
             cities.add(chosenCity);
         }
-        System.out.println(cities.size());
 
+        double x = 0;
+        double y = 0;
+        for (Coordinate city : cities) {
+            x += city.getX();
+            y += city.getY();
+        }
+        x /= (double) cities.size();
+        y /= (double) cities.size();
+
+        Coordinate central = new Coordinate(x, y);
+
+        Coordinate mostCentralCity = null;
+        Double bestDistance = Double.POSITIVE_INFINITY;
+        for (Coordinate city : cities) {
+            double distance = city.getDistance(central);
+            if (distance < bestDistance) {
+                mostCentralCity = city;
+                bestDistance = distance;
+            }
+        }
+
+        Graph<Coordinate, CityEdge> graph = new Graph<>();
+        for (Coordinate city : allCities) {
+            graph.addNode(city);
+        }
+
+        for (Structs.Polygon p : polygons) {
+            for (Integer i : p.getSegmentIdxsList()) {
+                Structs.Segment s = mesh.getSegments(i);
+                Vertex v1 = vertices.get(s.getV1Idx());
+                Vertex v2 = vertices.get(s.getV2Idx());
+                Coordinate c1 = new Coordinate(v1);
+                Coordinate c2 = new Coordinate(v2);
+                if (!allCities.contains(c1)) continue;
+                if (!allCities.contains(c2)) continue;
+                graph.addEdge(c1, new CityEdge(c1, c2));
+                graph.addEdge(c2, new CityEdge(c2, c1));
+            }
+        }
+
+        DijkstraPathFinder<Coordinate, CityEdge> pathfinder = new DijkstraPathFinder<>();
+        pathfinder.setGraph(graph);
+        pathfinder.computeShortestPathsFrom(mostCentralCity);
 
         ArrayList<Vertex> newVertices = new ArrayList<>();
         for (Vertex v : vertices) {
@@ -141,6 +240,22 @@ public class Cities {
             }
             newVertices.add(builder.build());
         }
-        return Structs.Mesh.newBuilder().addAllVertices(newVertices).addAllPolygons(mesh.getPolygonsList()).addAllSegments(mesh.getSegmentsList()).addAllProperties(mesh.getPropertiesList()).build();
+
+        ArrayList<Structs.Segment> newSegments = new ArrayList<>(mesh.getSegmentsList());
+        for (Coordinate city : cities) {
+            if (city.equals(mostCentralCity)) continue;
+            List<Coordinate> path = pathfinder.shortestPath(city);
+            Coordinate previousCoordinate = mostCentralCity;
+            for (Coordinate nextCoordinate : path) {
+                Vertex v1 = previousCoordinate.makeVertex();
+                Vertex v2 = nextCoordinate.makeVertex();
+                Structs.Segment s = Structs.Segment.newBuilder().setV1Idx(newVertices.size()).setV2Idx(newVertices.size() + 1).addProperties(Structs.Property.newBuilder().setKey("rgb_color").setValue("255,0,0").build()).addProperties(Structs.Property.newBuilder().setKey("hasWeight").setValue("true").build()).build();
+                newVertices.add(v1);
+                newVertices.add(v2);
+                newSegments.add(s);
+                previousCoordinate = nextCoordinate;
+            }
+        }
+        return Structs.Mesh.newBuilder().addAllVertices(newVertices).addAllPolygons(mesh.getPolygonsList()).addAllSegments(newSegments).addAllProperties(mesh.getPropertiesList()).build();
     }
 }
