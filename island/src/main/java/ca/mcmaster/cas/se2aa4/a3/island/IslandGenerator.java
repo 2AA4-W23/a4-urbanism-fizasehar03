@@ -1,18 +1,13 @@
 package ca.mcmaster.cas.se2aa4.a3.island;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs;
-import ca.mcmaster.cas.se2aa4.a2.io.Structs.Vertex;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Mesh;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Polygon;
 import ca.mcmaster.cas.se2aa4.a2.io.Structs.Segment;
-import ca.mcmaster.cas.se2aa4.a3.island.biomes.Biomes;
-import ca.mcmaster.cas.se2aa4.a3.island.elevationprofiles.Elevations;
-import ca.mcmaster.cas.se2aa4.a3.island.extentionpoints.Cities;
+import ca.mcmaster.cas.se2aa4.a3.island.extentionpoints.Cities.Cities;
 import ca.mcmaster.cas.se2aa4.a3.island.shapes.CircleIsland;
 import ca.mcmaster.cas.se2aa4.a3.island.shapes.SquareIsland;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
 
 
 public class IslandGenerator {
