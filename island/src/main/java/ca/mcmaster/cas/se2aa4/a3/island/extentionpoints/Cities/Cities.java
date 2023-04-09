@@ -8,8 +8,9 @@ import ca.mcmaster.cas.se2aa4.a2.io.Structs.Vertex;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.DijkstraPathFinder;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.Edge;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.Graph;
+
 public class Cities {
-    private static HashSet<Coordinate> extractPolygonCoordinates(Structs.Mesh mesh) {
+    public static HashSet<Coordinate> extractPolygonCoordinates(Structs.Mesh mesh) {
         List<Vertex> vertices = mesh.getVerticesList();
         HashSet<Coordinate> polygonCoordinates = new HashSet<>();
         for (Structs.Polygon p : mesh.getPolygonsList()) {
@@ -19,7 +20,7 @@ public class Cities {
         return polygonCoordinates;
     }
 
-    private static HashSet<Coordinate> findTouchingLandCoordinates(Structs.Mesh mesh, List<String> types) {
+    public static HashSet<Coordinate> findTouchingLandCoordinates(Structs.Mesh mesh, List<String> types) {
         List<Vertex> vertices = mesh.getVerticesList();
         HashSet<Coordinate> touchingLand = new HashSet<>();
         List<Structs.Polygon> polygons = mesh.getPolygonsList();
@@ -44,7 +45,7 @@ public class Cities {
         return touchingLand;
     }
 
-    private static HashSet<Coordinate> filterCities(List<Vertex> vertices, HashSet<Coordinate> polygonCoordinates, HashSet<Coordinate> touchingLand) {
+    public static HashSet<Coordinate> filterCities(List<Vertex> vertices, HashSet<Coordinate> polygonCoordinates, HashSet<Coordinate> touchingLand) {
         HashSet<Coordinate> allCities = new HashSet<>();
         for (Vertex v : vertices) {
             Coordinate c = new Coordinate(v);
@@ -55,7 +56,7 @@ public class Cities {
         return allCities;
     }
 
-    private static HashSet<Coordinate> selectCities(HashSet<Coordinate> allCities, int numCities, long seed) {
+    public static HashSet<Coordinate> selectCities(HashSet<Coordinate> allCities, int numCities, long seed) {
         Random r = new Random(seed);
         ArrayList<Coordinate> shuffledCities = new ArrayList<>(allCities);
         for (int i = 0; i < shuffledCities.size(); i++) {
@@ -80,7 +81,7 @@ public class Cities {
         return cities;
     }
 
-    private static Coordinate findMostCentralCity(HashSet<Coordinate> cities) {
+    public static Coordinate findMostCentralCity(HashSet<Coordinate> cities) {
         double x = 0;
         double y = 0;
         for (Coordinate city : cities) {
@@ -104,7 +105,7 @@ public class Cities {
         return mostCentralCity;
     }
 
-    private static Graph<Coordinate, CityEdge> constructCityGraph(Structs.Mesh mesh ,HashSet<Coordinate> allCities, List<Structs.Polygon> polygons, List<Vertex> vertices) {
+    public static Graph<Coordinate, CityEdge> constructCityGraph(Structs.Mesh mesh ,HashSet<Coordinate> allCities, List<Structs.Polygon> polygons, List<Vertex> vertices) {
         Graph<Coordinate, CityEdge> graph = new Graph<>();
         for (Coordinate city : allCities) {
             graph.addNode(city);
@@ -126,14 +127,14 @@ public class Cities {
         return graph;
     }
 
-    private static DijkstraPathFinder<Coordinate, CityEdge> computeShortestPaths(Graph<Coordinate, CityEdge> graph, Coordinate mostCentralCity) {
+    public static DijkstraPathFinder<Coordinate, CityEdge> computeShortestPaths(Graph<Coordinate, CityEdge> graph, Coordinate mostCentralCity) {
         DijkstraPathFinder<Coordinate, CityEdge> pathfinder = new DijkstraPathFinder<>();
         pathfinder.setGraph(graph);
         pathfinder.computeShortestPathsFrom(mostCentralCity);
         return pathfinder;
     }
 
-    private static List<Vertex> addCitySizeProperties(List<Vertex> vertices, HashSet<Coordinate> cities, Random r) {
+    public static List<Vertex> addCitySizeProperties(List<Vertex> vertices, HashSet<Coordinate> cities, Random r) {
         ArrayList<Vertex> newVertices = new ArrayList<>();
         for (Vertex v : vertices) {
             Vertex.Builder builder = Vertex.newBuilder().mergeFrom(v);
@@ -147,7 +148,7 @@ public class Cities {
         return newVertices;
     }
 
-    private static List<Structs.Segment> constructNewSegments(Structs.Mesh mesh ,HashSet<Coordinate> cities, Coordinate mostCentralCity, DijkstraPathFinder<Coordinate, CityEdge> pathfinder, List<Vertex> newVertices) {
+    public static List<Structs.Segment> constructNewSegments(Structs.Mesh mesh ,HashSet<Coordinate> cities, Coordinate mostCentralCity, DijkstraPathFinder<Coordinate, CityEdge> pathfinder, List<Vertex> newVertices) {
         ArrayList<Structs.Segment> newSegments = new ArrayList<>(mesh.getSegmentsList());
         for (Coordinate city : cities) {
             if (city.equals(mostCentralCity)) continue;
@@ -165,11 +166,9 @@ public class Cities {
         }
         return newSegments;
     }
-
-    private static Structs.Mesh updateMesh(Structs.Mesh mesh, List<Vertex> newVertices, List<Structs.Segment> newSegments) {
+    public static Structs.Mesh updateMesh(Structs.Mesh mesh, List<Vertex> newVertices, List<Structs.Segment> newSegments) {
         return Structs.Mesh.newBuilder().addAllVertices(newVertices).addAllPolygons(mesh.getPolygonsList()).addAllSegments(newSegments).addAllProperties(mesh.getPropertiesList()).build();
     }
-
     public static Structs.Mesh addCities(Structs.Mesh mesh, ArrayList<String> types, int numCities, long seed) {
         Random r = new Random(seed);
         HashSet<Coordinate> polygonCoordinates = extractPolygonCoordinates(mesh);
