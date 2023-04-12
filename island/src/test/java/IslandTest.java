@@ -117,7 +117,6 @@ public class IslandTest {
 
         CircleIsland circleIsland3 = new CircleIsland();
         circleIsland3.generateCircleIsland(aMesh, 700, 700, false, 3, 2, 3, "hills", "dry", 1400, "Arctic", 123456789);
-
     }
 
     @Test

@@ -88,8 +88,8 @@ public class Cities {
             x += city.getX();
             y += city.getY();
         }
-        x /= (double) cities.size();
-        y /= (double) cities.size();
+        x /= cities.size();
+        y /= cities.size();
 
         Coordinate central = new Coordinate(x, y);
 
