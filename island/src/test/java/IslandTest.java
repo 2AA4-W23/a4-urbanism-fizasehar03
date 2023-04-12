@@ -115,7 +115,6 @@ public class IslandTest {
         Aquifers aquifers1 = new Aquifers(circleIsland1.getTempMeshProperties(), circleIsland1.getType(), isAquifer, 4);
         Aquifers aquifers2 = new Aquifers(circleIsland2.getTempMeshProperties(), circleIsland2.getType(), isAquifer, 4);
 
-
         CircleIsland circleIsland3 = new CircleIsland();
         circleIsland3.generateCircleIsland(aMesh, 700, 700, false, 3, 2, 3, "hills", "dry", 1400, "Arctic", 123456789);
 
