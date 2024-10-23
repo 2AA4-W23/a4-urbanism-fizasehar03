@@ -4,9 +4,12 @@
 ```
 seharf@mcmaster.ca
 ```
+```
+
+Java module for graph operations, specializing in shortest path finding. Implemented commonly used functionalities for city operations, including tasks like extracting relavent coordinates, filtering cities, selecting optimal locations, and computing efficent routes.  
+```
 
 ## How to run?
-
 
 ## Examples of execution
 
